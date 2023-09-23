@@ -1,0 +1,5 @@
+# Question 7
+
+Where is the largest discrepancy in amino acid counts between the coding sequences (correct frame shift) and whole genome sequence (random frame shift), and why?
+
+The largest discrepancy is in the count of stop codons. This is because in the correct frame shift, there is just **one** stop codon per gene. However, in a random frame shift (whether due to incorrect or absent intron-splicing or single-nucleotide insertions/deletions), the shift causes the mRNA to read stop codons in the sequence prematurely or later than intended. The translation of this altered sequence then produces truncated or abnormally long proteins, usually misshapen due to the shift and not functional for their original purpose. Conversely, the correct reading frame preserves the one-stop-codon-per-gene ratio, and the probability of encountering a stop codon is lower.

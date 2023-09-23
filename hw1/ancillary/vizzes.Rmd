@@ -1,0 +1,156 @@
+
+---
+title: "vizzes"
+output:
+  html_document:
+    toc: true
+---
+
+
+```{r}
+library(tidyverse)
+install.packages('svglite')
+library(svglite)
+```
+
+
+```{r}
+# Aesthetics
+options(repr.plot.width = 2000, repr.plot.height = 1000)
+
+# warm_grey8 <- "#8b8178"
+# grey_425 <- "#54585a"
+# blue_dark <- "#005a70"
+# blue_light <- "#4689B0"
+# green_dark <- "#366B66"
+# green_light <- "#A3B179"
+# green_lighter <-  "#d1deab"
+# pink <- "#C70036"
+# pink_light <- "#ffb8cb"
+# orange <- "#C76C1D"
+# orange_light <- "#edc39f"
+# purple <- "#A13A70"
+# purple_light <- "#bd9dad"
+
+# theme_bar_narrow <- theme(panel.background = element_rect(fill = "transparent", color = "transparent"),
+#                             axis.ticks = element_blank(),
+#                             plot.title = element_text(color = blue_dark, face = "bold", size = 25),
+#                             axis.title = element_text(color = warm_grey8, size = 20),
+#                             axis.text = element_text(size = 13, color = warm_grey8),
+#                             legend.position = "bottom", 
+#                             legend.title = element_text(color = warm_grey8, size = 15), 
+#                             legend.text = element_text(color = warm_grey8, size = 13), 
+#                             legend.key = element_rect(fill = "white"))
+                            
+# theme_bar <- theme(panel.background = element_rect(fill = "transparent", color = "transparent"),
+#                     axis.ticks = element_blank(),
+#                     plot.title = element_text(color = blue_dark, face = "bold", size = 25),
+#                     axis.title = element_text(color = warm_grey8, size = 20),
+#                     axis.text = element_text(size = 20, color = warm_grey8),
+#                     legend.position = "bottom", 
+#                     legend.title = element_text(color = warm_grey8, size = 20), 
+#                     legend.text = element_text(color = warm_grey8), 
+#                     legend.key = element_rect(fill = "white"))
+```
+
+
+```{r}
+lt_blue <- "#96C1FF"
+neon_blue <- "#0061FF"
+bgrd <- "black"
+txt_color <- "white"
+```
+
+
+```{r}
+theme_bar_narrow <- theme(panel.background = element_rect(fill = bgrd, color = bgrd),
+                          plot.background = element_rect(fill = bgrd, color = bgrd),
+                          panel.grid.major = element_blank(),
+                          panel.grid.minor = element_blank(),
+                            axis.ticks = element_blank(),
+                            plot.title = element_text(color = txt_color, face = "bold", size = 25),
+                            axis.title = element_text(color = txt_color, size = 20),
+                            axis.text = element_text(size = 13, color = txt_color),
+                            legend.position = "bottom", 
+                            legend.title = element_text(color = txt_color, size = 15), 
+                            legend.text = element_text(color = "white", size = 13),
+                            legend.key = element_rect(fill = "transparent"),
+                            legend.background = element_rect(fill="transparent"),
+                            plot.margin = margin(2.2,2.2,2.2,2.2, "cm"))
+```
+
+
+```{r}
+%md
+
+### Codon counts
+```
+
+
+```{r}
+# Read in DNA data & stack
+separate_codons <- read_csv('separate_genes_output.csv') %>% mutate(category = 'Coding sequences (correct frame shift)')
+whole_codons <- read_csv('whole_genome_output.csv') %>% mutate(category = 'Whole genome (random frame shift)')
+codons_combined <- separate_codons %>% bind_rows(whole_codons)
+```
+
+
+```{r}
+# Create viz
+codons_combined %>%
+mutate(category = factor(category, levels = c('Whole genome (random frame shift)', 'Coding sequences (correct frame shift)'))) %>%
+ggplot(aes(fct_reorder2(codon, category, count), count, color = category, fill = category)) +
+geom_bar(stat = 'identity', position = 'dodge', width = 0.5) +
+scale_color_manual(values = c(lt_blue, neon_blue)) +
+scale_fill_manual(values = c(lt_blue, neon_blue)) +
+theme(
+  # legend.position = 'bottom',
+axis.text.x = element_text(angle = 90)) +
+labs(x = 'Codon',
+y = 'Frequency',
+color = '',
+fill = '') +
+theme_bar_narrow
+
+ggsave('codon_counts.svg')
+```
+
+
+```{r}
+%md
+
+### Amino acid counts
+```
+
+
+```{r}
+library(data.table)
+
+# Convert to aa data
+aa_crosswalk <- fread("https://raw.githubusercontent.com/zhanxw/anno/master/codon.txt", data.table = T, skip = 2, fill = T)
+aa_df <- as.data.frame(aa_crosswalk)
+```
+
+
+```{r}
+codons_combined %>% left_join(aa_df, by = c("codon" = "V1")) %>%
+group_by(V2, category) %>%
+summarize(Frequency = sum(count)) %>%
+ungroup %>%
+rename(aa = V2) %>%
+mutate(category = factor(category, levels = c('Whole genome (random frame shift)', 'Coding sequences (correct frame shift)'))) %>%
+ggplot(aes(fct_reorder2(aa, category, Frequency), Frequency, color = category, fill = category)) +
+geom_bar(stat = 'identity', position = 'dodge', width = 0.5) +
+scale_color_manual(values = c(lt_blue, neon_blue)) +
+scale_fill_manual(values = c(lt_blue, neon_blue)) +
+theme(
+  # legend.position = 'bottom',
+axis.text.x = element_text(angle = 90)) +
+labs(x = 'Amino acid',
+color = '',
+fill = '') +
+theme_bar_narrow
+
+ggsave('aa_counts.svg')
+```
+
