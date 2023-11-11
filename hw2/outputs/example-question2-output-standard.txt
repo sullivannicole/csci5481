@@ -1,0 +1,6 @@
+-15
+>SARS-Cov-2_reference_genome_spike_protein
+AT___GTTTGTTT_TTCTTGTTT_TATTGCCACTAGTCTCTAGTCAGTGT_GTTAATCTTACAACCAGA
+|x   |xxxxxx| |||x||||x |xx|||xx|| |x||||x||  ||xx |xx|x|x|xxx||||   
+AACCCGCCACCATGTTCGTGTTCCTGGTGCTGCT_GCCTCTGGT__GTCCAGCCAGTGTGTGAACC___
+>Pfizer_mRNA_vaccine
