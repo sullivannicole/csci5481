@@ -8,6 +8,6 @@ The source code for this homework is in hw4.py. Note that the `.py` extension is
 
 Amongst other things, deliverables included a couple visualizations:
 
-![](img/solution-problem-2.png
+![](img/solution-problem-2.png)
 
 ![](img/solution-problem-4.png)
